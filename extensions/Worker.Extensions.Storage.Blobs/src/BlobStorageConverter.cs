@@ -30,7 +30,7 @@ namespace Microsoft.Azure.Functions.Worker.Converters
                 return new ValueTask<ConversionResult>(ConversionResult.Unhandled());
             }
 
-            var content = JsonConvert.DeserializeObject<Dictionary<string, string>>(bindingData.Content);
+            var content = bindingData.Content.ToObjectFromJson<Dictionary<string, string>>();
 
             content.TryGetValue("Connection", out var connectionName);
             content.TryGetValue("BlobName", out var blobName);
