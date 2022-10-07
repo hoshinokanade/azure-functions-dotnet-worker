@@ -429,17 +429,17 @@ namespace Microsoft.Azure.Functions.Worker.Sdk
             // Is sdk parameter type
             if (supportsReferenceType)
             {
-                bindingDict["DataType"] = "Reference";
+                bindingDict["DataType"] = nameof(DataType.BindingData);
             }
             // Is string parameter type
             else if (IsStringType(parameterType.FullName))
             {
-                bindingDict["DataType"] = "String";
+                bindingDict["DataType"] = nameof(DataType.String);
             }
             // Is binary parameter type
             else if (IsBinaryType(parameterType.FullName))
             {
-                bindingDict["DataType"] = "Binary";
+                bindingDict["DataType"] = nameof(DataType.Binary);
             }
 
             foreach (var property in attribute.GetAllDefinedProperties())
@@ -475,11 +475,11 @@ namespace Microsoft.Azure.Functions.Worker.Sdk
                     {
                         if (dataType.Equals(DataType.String))
                         {
-                            bindingDict["DataType"] = "String";
+                            bindingDict["DataType"] = nameof(DataType.String);
                         }
                         else if (dataType.Equals(DataType.Binary))
                         {
-                            bindingDict["DataType"] = "Binary";
+                            bindingDict["DataType"] = nameof(DataType.Binary);
                         }
                     }
                     else

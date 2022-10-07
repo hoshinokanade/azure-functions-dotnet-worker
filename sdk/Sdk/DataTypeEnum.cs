@@ -9,6 +9,6 @@ namespace Microsoft.Azure.Functions.Worker.Sdk
         Binary,
         String,
         Stream,
-        Reference
+        BindingData
     }
 }

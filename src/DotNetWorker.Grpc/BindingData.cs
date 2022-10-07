@@ -14,6 +14,6 @@ namespace Microsoft.Azure.Functions.Worker.Grpc.Messages
 
         string IBindingData.ContentType => ContentType;
 
-        BinaryData IBindingData.Content => BinaryData.FromString(Content);
+        BinaryData IBindingData.Content => BinaryData.FromBytes(Content.ToByteArray());
     }
 }
