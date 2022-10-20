@@ -1,11 +1,14 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-﻿using Microsoft.Azure.Functions.Worker.Extensions.Abstractions;
+using System;
+using System.Collections.Generic;
+using Microsoft.Azure.Functions.Worker.Extensions.Abstractions;
+using Microsoft.Azure.Functions.Worker.Extensions.ServiceBus;
 
 namespace Microsoft.Azure.Functions.Worker
 {
-    public sealed class ServiceBusTriggerAttribute : TriggerBindingAttribute, ISupportCardinality
+    public sealed class ServiceBusTriggerAttribute : TriggerBindingAttribute, ISupportCardinality, IConverterProvider
     {
         private bool _isBatched = false;
 
@@ -104,5 +107,12 @@ namespace Microsoft.Azure.Functions.Worker
                 }
             }
         }
+
+public IList<Type> ConverterTypes =>
+    new[]
+    {
+        typeof(MyPrimaryConverter),
+        typeof(MyBackupConverter)
+    };
     }
 }

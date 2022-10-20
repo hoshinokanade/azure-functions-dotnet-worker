@@ -66,11 +66,11 @@ namespace Microsoft.Azure.Functions.Worker.Context.Features
                     IReadOnlyDictionary<string, object> properties = ImmutableDictionary<string, object>.Empty;
 
                     // Pass info about specific input converter type defined for this parameter, if present.
-                    if (param.Properties.TryGetValue(PropertyBagKeys.ConverterType, out var converterTypeAssemblyFullName))
+                    if (param.Properties.TryGetValue(PropertyBagKeys.ConverterTypes, out var converterTypesFullNames))
                     {
                         properties = new Dictionary<string, object>()
                         {
-                            { PropertyBagKeys.ConverterType, converterTypeAssemblyFullName }
+                            { PropertyBagKeys.ConverterTypes, converterTypesFullNames }
                         };
                     }
 

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Azure.Functions.Worker.Converters;
@@ -35,15 +36,18 @@ namespace Microsoft.Azure.Functions.Worker.Context.Features
         public async ValueTask<ConversionResult> ConvertAsync(ConverterContext converterContext)
         {
             // Check a converter is explicitly specified via the converter context. If so, use that.
-            IInputConverter? converterFromContext = GetConverterFromContext(converterContext);
+            var convertersFromContext = GetConverterFromContext(converterContext).ToArray();
 
-            if (converterFromContext is not null)
+            foreach (var converterFromContext in convertersFromContext)
             {
-                var conversionResult = await ConvertAsyncUsingConverter(converterFromContext, converterContext);
-
-                if (conversionResult.Status != ConversionStatus.Unhandled)
+                if (converterFromContext is not null)
                 {
-                    return conversionResult;
+                    var conversionResult = await ConvertAsyncUsingConverter(converterFromContext, converterContext);
+
+                    if (conversionResult.Status != ConversionStatus.Unhandled)
+                    {
+                        return conversionResult;
+                    }
                 }
             }
 
@@ -83,32 +87,36 @@ namespace Microsoft.Azure.Functions.Worker.Context.Features
         }
 
         /// <summary>
-        /// Gets an <see cref="IInputConverter"/> instance if converter context has information about what converter to be used.
+        /// Gets a collection of <see cref="IInputConverter"/> instances if converter context has information about what converters to be used.
         /// </summary>
         /// <param name="context">The converter context.</param>
-        /// <returns>An IInputConverter instance or null</returns>
-        private IInputConverter? GetConverterFromContext(ConverterContext context)
+        /// <returns>An <see cref="IEnumerable{IInputConverter}"/> of <see cref="IInputConverter"/> instances.</returns>
+        private IEnumerable<IInputConverter> GetConverterFromContext(ConverterContext context)
         {
-            string? converterTypeFullName;
-
+            IEnumerable<string>? converterTypeNames = null;
             // Check a converter is specified on the conversionContext.Properties. If yes, use that.
-            if (context.Properties.TryGetValue(PropertyBagKeys.ConverterType, out var converterTypeAssemblyQualifiedNameObj)
-                && converterTypeAssemblyQualifiedNameObj is string converterTypeAssemblyQualifiedName)
+            if (context.Properties.TryGetValue(PropertyBagKeys.ConverterTypes, out var converterTypesAssemblyQualifiedNames)
+                && converterTypesAssemblyQualifiedNames is IEnumerable<string> converterTypeAssemblyQualifiedNames)
             {
-                converterTypeFullName = converterTypeAssemblyQualifiedName;
+                converterTypeNames = converterTypeAssemblyQualifiedNames;
             }
             else
             {
                 // check the type used as "TargetType" has an "InputConverter" attribute decoration.
-                converterTypeFullName = GetConverterTypeNameFromAttributeOnType(context.TargetType);
+                var name = GetConverterTypeNameFromAttributeOnType(context.TargetType);
+                if (name is not null)
+                {
+                    converterTypeNames = new string[] { name };
+                }
             }
 
-            if (converterTypeFullName is not null)
+            if (converterTypeNames is not null)
             {
-                return _inputConverterProvider.GetOrCreateConverterInstance(converterTypeFullName);
+                foreach(var converterTypeFullName in converterTypeNames)
+                {
+                    yield return _inputConverterProvider.GetOrCreateConverterInstance(converterTypeFullName);
+                }
             }
-
-            return null;
         }
 
         /// <summary>

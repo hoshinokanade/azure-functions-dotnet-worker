@@ -10,6 +10,7 @@ using System.Reflection;
 using Microsoft.Azure.Functions.Worker.Grpc.Messages;
 using Microsoft.Azure.Functions.Worker.Invocation;
 using Microsoft.Azure.Functions.Worker.Converters;
+using Microsoft.Azure.Functions.Worker.Extensions.Abstractions;
 
 namespace Microsoft.Azure.Functions.Worker.Definition
 {
@@ -63,11 +64,37 @@ namespace Microsoft.Azure.Functions.Worker.Definition
             {
                 return new Dictionary<string, object>()
                 {
-                    { PropertyBagKeys.ConverterType, inputConverterAttribute.ConverterType.AssemblyQualifiedName! }
+                    { PropertyBagKeys.ConverterTypes, new[] { inputConverterAttribute.ConverterType.AssemblyQualifiedName! } }
                 }.ToImmutableDictionary();
             }
 
+            // Check converters are defined in the binding.
+            var convertersFromBinding = GetConverterInfoFromBinding(parameterInfo);
+            if (convertersFromBinding != null)
+            {
+                return new Dictionary<string, object>()
+                {
+                    { PropertyBagKeys.ConverterTypes, convertersFromBinding }
+                }.ToImmutableDictionary();
+            }    
+
             return ImmutableDictionary<string, object>.Empty;
+        }
+
+        /// <summary>
+        /// Get converter info from the binding(trigger/input/output) definition, if exists.
+        /// A binding can provide converter information by implementing the <see cref="IConverterProvider"/> interface.
+        /// </summary>
+        private static IEnumerable<string>? GetConverterInfoFromBinding(ParameterInfo? parameterInfo)
+        {
+            Attribute? bindingAttribute = parameterInfo?.GetCustomAttributes(typeof(BindingAttribute)).FirstOrDefault();
+
+            if (bindingAttribute is IConverterProvider converterProvider)
+            {
+                return converterProvider.ConverterTypes.Select(a => a.AssemblyQualifiedName!);
+            }
+            
+            return null;
         }
     }
 }

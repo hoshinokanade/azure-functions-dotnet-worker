@@ -1,11 +1,19 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-﻿using System;
+using System;
+using System.Collections.Generic;
 using Microsoft.Azure.Functions.Worker.Extensions.Abstractions;
 
 namespace Microsoft.Azure.Functions.Worker
 {
+public class FooTriggerBinding : TriggerBindingAttribute, IConverterProvider
+{
+    public IList<Type> ConverterTypes => new[] { typeof(MyFooConverter) };
+
+    // Other properties relevant to the binding.
+}
+
     public sealed class CosmosDBTriggerAttribute : TriggerBindingAttribute
     {
         /// <summary>
@@ -81,7 +89,7 @@ namespace Microsoft.Azure.Functions.Worker
         /// Defines a prefix to be used within a Leases container for this Trigger. Useful when sharing the same Lease container among multiple Triggers
         /// </summary>
         public string? LeaseContainerPrefix { get; set; }
-        
+
         /// <summary>
         /// Optional.
         /// Customizes the delay in milliseconds in between polling a partition for new changes on the feed, after all current changes are drained.  Default is 5000 (5 seconds).

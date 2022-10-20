@@ -1,10 +1,9 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-namespace Microsoft.Azure.Functions.Worker.Converters
+namespace Microsoft.Azure.Functions.Worker
 {
-    internal static class PropertyBagKeys
+    internal class MyFooConverter
     {
-        internal const string ConverterTypes ="converterTypes";
     }
 }

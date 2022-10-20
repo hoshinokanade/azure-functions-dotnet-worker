@@ -79,7 +79,7 @@ namespace Microsoft.Azure.Functions.Worker.Tests.Features
             // Explicitly specify a converter to be used via ConverterContext.Properties.
             IReadOnlyDictionary<string, object> properties = new Dictionary<string, object>()
             {
-                { PropertyBagKeys.ConverterType, typeof(MySimpleSyncInputConverter).AssemblyQualifiedName }
+                { PropertyBagKeys.ConverterTypes, new [] { typeof(MySimpleSyncInputConverter).AssemblyQualifiedName } }
             };
             var converterContext = CreateConverterContext(typeof(string), "0c67c078-7213-4e91-ad41-f8747c865f3d", properties);
 
