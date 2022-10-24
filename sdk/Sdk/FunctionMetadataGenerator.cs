@@ -423,11 +423,13 @@ namespace Microsoft.Azure.Functions.Worker.Sdk
                 bindingDict["Name"] = parameterName!;
             }
 
+            var direction = GetBindingDirection(attribute);
+            bindingDict["Direction"] = direction;
             bindingDict["Type"] = bindingType;
-            bindingDict["Direction"] = GetBindingDirection(attribute);
 
-            // Is sdk parameter type
-            if (supportsReferenceType)
+            // For extensions that support worker binding, set the DataType so parameters are bound by the worker.
+            // Only use worker binding for input and trigger bindings
+            if (supportsReferenceType && direction != Constants.OutputBindingDirection)
             {
                 bindingDict["DataType"] = nameof(DataType.BindingData);
             }
@@ -671,7 +673,7 @@ namespace Microsoft.Azure.Functions.Worker.Sdk
             IDictionary<string, object> returnBinding = new ExpandoObject();
             returnBinding["Name"] = name;
             returnBinding["Type"] = "http";
-            returnBinding["Direction"] = "Out";
+            returnBinding["Direction"] = Constants.OutputBindingDirection;
 
             bindingMetadata.Add((ExpandoObject)returnBinding);
         }
@@ -702,7 +704,6 @@ namespace Microsoft.Azure.Functions.Worker.Sdk
 
                     if (assemblyAttribute.ConstructorArguments.Count == 4)
                     {
-                        // SupportsBindingReferenceType
                         supportsReferenceType = (bool)assemblyAttribute.ConstructorArguments[3].Value;
                     }
 
@@ -723,10 +724,10 @@ namespace Microsoft.Azure.Functions.Worker.Sdk
         {
             if (IsOutputBindingType(attribute))
             {
-                return "Out";
+                return Constants.OutputBindingDirection;
             }
 
-            return "In";
+            return Constants.InputBindingDirection;
         }
 
         private static bool IsOutputBindingType(CustomAttribute attribute)
