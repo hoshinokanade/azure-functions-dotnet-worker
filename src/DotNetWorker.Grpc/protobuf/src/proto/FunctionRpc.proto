@@ -33,6 +33,7 @@ message StreamingMessage {
     // Worker responds after initializing with its capabilities & status
     WorkerInitResponse worker_init_response = 16;
 
+    // MESSAGE NOT USED
     // Worker periodically sends empty heartbeat message to host
     WorkerHeartbeat worker_heartbeat = 15;
 
@@ -120,7 +121,7 @@ message WorkerInitRequest {
 
 // Worker responds with the result of initializing itself
 message WorkerInitResponse {
-  // NOT USED
+  // PROPERTY NOT USED
   // TODO: Remove from protobuf during next breaking change release
   string worker_version = 1;
 
@@ -173,7 +174,7 @@ message StatusResult {
   repeated RpcLog logs = 3;
 }
 
-// NOT USED
+// MESSAGE NOT USED
 // TODO: Remove from protobuf during next breaking change release
 message WorkerHeartbeat {}
 
@@ -396,8 +397,8 @@ message InvocationCancel {
   // Unique id for invocation
   string invocation_id = 2;
 
-  // Time period before force shutdown
-  google.protobuf.Duration grace_period = 1; // could also use absolute time
+  // PROPERTY NOT USED
+  google.protobuf.Duration grace_period = 1;
 }
 
 // Worker responds with status of Invocation
@@ -429,7 +430,7 @@ message TypedData {
     CollectionString collection_string = 9;
     CollectionDouble collection_double = 10;
     CollectionSInt64 collection_sint64 = 11;
-    BindingData bindingData = 12;
+    BindingData binding_data = 12;
   }
 }
 
@@ -510,7 +511,7 @@ message BindingInfo {
       string = 1;
       binary = 2;
       stream = 3;
-      bindingData = 4;
+      binding_data = 4;
     }
 
   // Type of binding (e.g. HttpTrigger)
@@ -650,10 +651,19 @@ message RpcHttp {
   map<string,NullableString> nullable_query = 22;
 }
 
+// Message representing Microsoft.Azure.WebJobs.ParameterBindingData
+// Used for hydrating SDK-type bindings in out-of-proc workers
 message BindingData
 {
-    string Version = 1;
-    string Source = 2;
-    string ContentType = 3;
-    bytes Content = 4;
+    // The version of the binding data content
+    string version = 1;
+
+    // The extension source of the binding data
+    string source = 2;
+
+    // The binding data content
+    string content_type = 3;
+
+    // The content type of the binding data content
+    bytes content = 4;
 }

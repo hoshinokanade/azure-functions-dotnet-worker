@@ -7,7 +7,9 @@ using System.Diagnostics;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Mono.Cecil;
+using Mono.Collections.Generic;
 
 namespace Microsoft.Azure.Functions.Worker.Sdk
 {
@@ -54,7 +56,7 @@ namespace Microsoft.Azure.Functions.Worker.Sdk
 
             var functions = new List<SdkFunctionMetadata>();
 
-            _logger.LogMessage($"Found { targetAssemblies.Count} assemblies to evaluate in '{sourcePath}':");
+            _logger.LogMessage($"Found {targetAssemblies.Count} assemblies to evaluate in '{sourcePath}':");
 
             foreach (var path in targetAssemblies)
             {
@@ -334,7 +336,8 @@ namespace Microsoft.Azure.Functions.Worker.Sdk
 
                     foundOutputAttribute = true;
 
-                    AddOutputBindingMetadata(bindingMetadata, propertyAttribute, property.PropertyType, property.Name);
+                    var bindingType = GetBindingType(propertyAttribute);
+                    AddOutputBindingMetadata(bindingMetadata, propertyAttribute, bindingType, property.PropertyType, property.Name);
                     AddExtensionInfo(_extensions, propertyAttribute, out bool supportsReferenceType);
                 }
             }
@@ -354,7 +357,8 @@ namespace Microsoft.Azure.Functions.Worker.Sdk
                             "Please use an encapsulation to define the bindings in properties. For more information: https://aka.ms/dotnet-worker-poco-binding.");
                     }
 
-                    AddOutputBindingMetadata(bindingMetadata, methodAttribute, methodAttribute.AttributeType, Constants.ReturnBindingName);
+                    var bindingType = GetBindingType(methodAttribute);
+                    AddOutputBindingMetadata(bindingMetadata, methodAttribute, bindingType, methodAttribute.AttributeType, Constants.ReturnBindingName);
                     AddExtensionInfo(_extensions, methodAttribute, out bool supportsReferenceType);
 
                     foundBinding = true;
@@ -366,17 +370,55 @@ namespace Microsoft.Azure.Functions.Worker.Sdk
 
         private void AddInputTriggerBindingsAndExtensions(IList<ExpandoObject> bindingMetadata, MethodDefinition method)
         {
+            var inputBindingContainsExpression = InputParameterPropertyContainsExpression(method.Parameters);
+
             foreach (ParameterDefinition parameter in method.Parameters)
             {
                 foreach (CustomAttribute parameterAttribute in parameter.CustomAttributes)
                 {
                     if (IsFunctionBindingType(parameterAttribute))
                     {
+                        string bindingType = GetBindingType(parameterAttribute);
                         AddExtensionInfo(_extensions, parameterAttribute, out bool supportsReferenceType);
-                        AddBindingMetadata(bindingMetadata, parameterAttribute, parameter.ParameterType, parameter.Name, supportsReferenceType);
+
+                        // if this is a trigger and any input binding contains an expression, don't use BindingData
+                        if (Regex.IsMatch(bindingType, "Trigger") && inputBindingContainsExpression)
+                        {
+                            supportsReferenceType = false;
+                        }
+
+                        ExpandoObject binding = BuildBindingMetadataFromAttribute(parameterAttribute, bindingType, parameter.ParameterType, parameter.Name, supportsReferenceType);
+                        bindingMetadata.Add(binding);
                     }
                 }
             }
+        }
+
+        private bool InputParameterPropertyContainsExpression(Collection<ParameterDefinition> parameters)
+        {
+            foreach (ParameterDefinition parameter in parameters)
+            {
+                foreach (CustomAttribute parameterAttribute in parameter.CustomAttributes)
+                {
+                    var bindingType = GetBindingType(parameterAttribute);
+
+                    if (Regex.IsMatch(bindingType, "Trigger"))
+                    {
+                        // skip triggers
+                        continue;
+                    }
+
+                    foreach (var property in parameterAttribute.GetAllDefinedProperties())
+                    {
+                        if (Regex.IsMatch(property.Value.ToString(), @"{(.*?)\}"))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
 
         private static TypeReference? GetTaskElementType(TypeReference typeReference)
@@ -399,16 +441,10 @@ namespace Microsoft.Azure.Functions.Worker.Sdk
             }
         }
 
-        private static void AddOutputBindingMetadata(IList<ExpandoObject> bindingMetadata, CustomAttribute attribute, TypeReference parameterType, string? name = null)
+        private static void AddOutputBindingMetadata(IList<ExpandoObject> bindingMetadata, CustomAttribute attribute, string bindingType, TypeReference parameterType, string? name = null)
         {
-            AddBindingMetadata(bindingMetadata, attribute, parameterType, parameterName: name);
-        }
-
-        private static void AddBindingMetadata(IList<ExpandoObject> bindingMetadata, CustomAttribute attribute, TypeReference parameterType, string? parameterName, bool supportsReferenceType = false)
-        {
-            string bindingType = GetBindingType(attribute);
-
-            ExpandoObject binding = BuildBindingMetadataFromAttribute(attribute, bindingType, parameterType, parameterName, supportsReferenceType);
+            // SDK-type bindings not supported for output bindings
+            ExpandoObject binding = BuildBindingMetadataFromAttribute(attribute, bindingType, parameterType, parameterName: name, supportsReferenceType: false);
             bindingMetadata.Add(binding);
         }
 
@@ -487,7 +523,7 @@ namespace Microsoft.Azure.Functions.Worker.Sdk
                     else
                     {
                         throw new FunctionsMetadataGenerationException("Function is configured to process events in batches but parameter type is not iterable. " +
-                            $"Change parameter named '{ parameterName }' to be an IEnumerable type or set 'IsBatched' to false on your '{attribute.AttributeType.Name.Replace("Attribute", "")}' attribute.");
+                            $"Change parameter named '{parameterName}' to be an IEnumerable type or set 'IsBatched' to false on your '{attribute.AttributeType.Name.Replace("Attribute", "")}' attribute.");
                     }
                 }
                 // Batching set to false
