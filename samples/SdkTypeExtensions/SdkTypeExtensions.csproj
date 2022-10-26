@@ -15,7 +15,7 @@
 
   <ItemGroup>
     <!-- <PackageReference Include="Microsoft.Azure.Functions.Worker" Version="1.8.0" /> -->
-    <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.7.0-dev638022558297179160-local" />
+    <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="1.7.0-dev638022570877082620-local" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.Net.NameResolution" Version="4.3.0" />
   </ItemGroup>
@@ -23,6 +23,7 @@
     <ProjectReference Include="..\..\extensions\Worker.Extensions.Http\src\Worker.Extensions.Http.csproj" />
     <ProjectReference Include="..\..\extensions\Worker.Extensions.CosmosDB\src\Worker.Extensions.CosmosDB.csproj" />
     <ProjectReference Include="..\..\extensions\Worker.Extensions.Storage.Blobs\src\Worker.Extensions.Storage.Blobs.csproj" />
+    <ProjectReference Include="..\..\extensions\Worker.Extensions.Storage.Queues\src\Worker.Extensions.Storage.Queues.csproj" />
     <ProjectReference Include="..\..\src\DotNetWorker.ApplicationInsights\DotNetWorker.ApplicationInsights.csproj" />
     <ProjectReference Include="..\..\src\DotNetWorker\DotNetWorker.csproj" />
   </ItemGroup>

@@ -20,12 +20,12 @@ namespace Microsoft.Azure.Functions.Worker.Converters
     {
         public ValueTask<ConversionResult> ConvertAsync(ConverterContext context)
         {
-            if (context.Source is not IBindingData bindingData)
+            if (context.Source is not IModelBindingData bindingData)
             {
                 return new ValueTask<ConversionResult>(ConversionResult.Unhandled());
             }
 
-            if (bindingData.Source is not "Microsoft.Azure.WebJobs.Extensions.Storage.Blobs")
+            if (bindingData.Source is not "AzureStorageBlobs")
             {
                 return new ValueTask<ConversionResult>(ConversionResult.Unhandled());
             }

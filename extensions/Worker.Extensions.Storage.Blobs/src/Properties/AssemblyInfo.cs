@@ -4,4 +4,4 @@
 using Microsoft.Azure.Functions.Worker.Extensions.Abstractions;
 
 // [assembly: ExtensionInformation("Microsoft.Azure.WebJobs.Extensions.Storage.Blobs", "5.0.0")]
-[assembly: ExtensionInformation("Microsoft.Azure.WebJobs.Extensions.Storage.Blobs", "5.2.0-alpha.20221024.1", false, true)]
+[assembly: ExtensionInformation("Microsoft.Azure.WebJobs.Extensions.Storage.Blobs", "5.2.0-alpha.20221025.1", false, true)]

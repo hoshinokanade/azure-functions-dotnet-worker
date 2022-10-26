@@ -11,7 +11,7 @@ namespace SampleApp
     {
         [Function(nameof(BlobBookFunction))]
         public static void Run(
-            [BlobTrigger("book-trigger", Connection = "AzureWebJobsStorage")] Book book,
+            [QueueTrigger("book-trigger", Connection = "AzureWebJobsStorage")] Book book,
             [BlobInput("input-container/{id}.txt", Connection = "AzureWebJobsStorage")] string myBlob,
             FunctionContext context)
         {
