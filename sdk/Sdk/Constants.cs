@@ -50,5 +50,8 @@ namespace Microsoft.Azure.Functions.Worker.Sdk
         // Binding directions
         internal const string OutputBindingDirection = "Out";
         internal const string InputBindingDirection = "In";
+
+        // Binding properties
+        internal const string SupportsDeferredBindingProperty = "SupportsDeferredBinding";
     }
 }

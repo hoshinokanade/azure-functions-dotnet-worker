@@ -408,8 +408,6 @@ namespace Microsoft.Azure.Functions.Worker.Sdk
         private static void AddBindingMetadata(IList<ExpandoObject> bindingMetadata, CustomAttribute attribute, TypeReference parameterType, string? parameterName, bool supportsReferenceType = false)
         {
             string bindingType = GetBindingType(attribute);
-
-            // SDK-type bindings not supported for output bindings
             ExpandoObject binding = BuildBindingMetadataFromAttribute(attribute, bindingType, parameterType, parameterName, supportsReferenceType);
             bindingMetadata.Add(binding);
         }
@@ -434,7 +432,7 @@ namespace Microsoft.Azure.Functions.Worker.Sdk
             // Only use deferred binding for input and trigger bindings, output is out not currently supported
             if (supportsDeferredBinding && direction != Constants.OutputBindingDirection)
             {
-                bindingProperties.Add("SupportsDeferredBinding", supportsDeferredBinding);
+                bindingProperties.Add(Constants.SupportsDeferredBindingProperty, Boolean.TrueString);
             }
             else
             {
