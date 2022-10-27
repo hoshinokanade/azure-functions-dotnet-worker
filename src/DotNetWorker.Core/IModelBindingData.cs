@@ -8,27 +8,26 @@ namespace Microsoft.Azure.Functions.Worker.Core
     /// <summary>
     /// A representation of a Microsoft.Azure.WebJobs.ParameterBindingData
     /// </summary>
-    public interface IBindingData
+    public interface IModelBindingData
     {
         /// <summary>
-        /// Gets the version of ParameterBindingData schema
+        /// The version of the binding data content
         /// </summary>
         string Version { get; }
 
         /// <summary>
-        /// Gets the extension source of the event i.e CosmosDB, BlobStorage
+        /// The extension source of the binding data i.e CosmosDB, AzureStorageBlobs
         /// </summary>
         string Source { get; }
 
         /// <summary>
-        /// Gets the content type of the content data
-        /// </summary>
-        string ContentType { get; }
-
-        /// <summary>
-        /// Gets the event content as <see cref="BinaryData"/>. Using BinaryData, one can deserialize
-        /// the payload into rich data, or access the raw JSON data using <see cref="BinaryData.ToString()"/>.
+        /// The binding data content
         /// </summary>
         BinaryData Content { get; }
+
+        /// <summary>
+        /// The content type of the binding data content i.e. "application/json"
+        /// </summary>
+        string ContentType { get; }
     }
 }

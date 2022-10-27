@@ -14,7 +14,7 @@ namespace Microsoft.Azure.Functions.Worker.Extensions.Abstractions
 
         public bool EnableImplicitRegistration { get; }
 
-        public bool SupportsBindingReferenceType { get; }
+        public bool SupportsDeferredBinding { get; }
 
         public ExtensionInformationAttribute(string extensionPackage, string extensionVersion)
             : this(extensionPackage, extensionVersion, false, false)
@@ -26,12 +26,12 @@ namespace Microsoft.Azure.Functions.Worker.Extensions.Abstractions
         {
         }
 
-        public ExtensionInformationAttribute(string extensionPackage, string extensionVersion, bool enableImplicitRegistration, bool supportsBindingReferenceType)
+        public ExtensionInformationAttribute(string extensionPackage, string extensionVersion, bool enableImplicitRegistration, bool supportsDeferredBinding)
         {
             ExtensionPackage = extensionPackage;
             ExtensionVersion = extensionVersion;
             EnableImplicitRegistration = enableImplicitRegistration;
-            SupportsBindingReferenceType = supportsBindingReferenceType;
+            SupportsDeferredBinding = supportsDeferredBinding;
         }
     }
 }
