@@ -1,12 +1,17 @@
 ﻿// Copyright (c) .NET Foundation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+using Azure.Storage.Blobs;
+using System.Collections.Generic;
+using System;
 using Microsoft.Azure.Functions.Worker.Extensions.Abstractions;
 
 namespace Microsoft.Azure.Functions.Worker
 {
-    public sealed class BlobTriggerAttribute : TriggerBindingAttribute
+    public sealed class BlobTriggerAttribute : TriggerBindingAttribute, ITypesProvider
     {
+        public IList<Type> Types => new[] { typeof(string), typeof(BlobClient) };
+
         private readonly string _blobPath;
 
         /// <summary>
@@ -36,5 +41,10 @@ namespace Microsoft.Azure.Functions.Worker
         /// Gets or sets the app setting name that contains the Azure Storage connection string.
         /// </summary>
         public string? Connection { get; set; }
+
+        public IList<Type> GetTypes()
+        {
+            return Types;
+        }
     }
 }

@@ -19,13 +19,7 @@ namespace Microsoft.Azure.Functions.Worker.Converters
     /// </summary>
     internal class BlobStorageConverter : IInputConverter, ITypesProvider
     {
-        public IList<Type> Types =>  new[] { typeof(Type) };
-
-        public BlobStorageConverter()
-        {
-            Types.Add(typeof(string));
-            Types.Add(typeof(BlobClient));
-        }
+        public IList<Type> Types =>  new[] { typeof(string), typeof(BlobClient)  };
 
         public ValueTask<ConversionResult> ConvertAsync(ConverterContext context)
         {
@@ -126,6 +120,11 @@ namespace Microsoft.Azure.Functions.Worker.Converters
             };
 
             return (T)blob;
+        }
+
+        public IList<Type> GetTypes()
+        {
+            throw new NotImplementedException();
         }
     }
 }

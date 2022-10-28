@@ -12,7 +12,7 @@ namespace Microsoft.Azure.Functions.Worker.Sdk.Analyzers
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class ExtensionsTypesNotSupported : DiagnosticAnalyzer
     {
-        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(DiagnosticDescriptors.ExtensionsTypesNotSupported); } }
+        public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(DiagnosticDescriptors.ExtensionsTypeNotSupported); } }
 
         public override void Initialize(AnalysisContext context)
         {
@@ -32,12 +32,11 @@ namespace Microsoft.Azure.Functions.Worker.Sdk.Analyzers
 
                 if (symbol.IsFunction(c))
                 {
-                    var webjobsAttributes = symbol.GetWebJobsAttributes();
+                    var webjobsAttributes = symbol.GetInvalidAttributes();
                     foreach (var attribute in webjobsAttributes)
                     {
-                        
                         var location = Location.Create(attribute.ApplicationSyntaxReference.SyntaxTree, attribute.ApplicationSyntaxReference.Span);
-                        c.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.WebJobsAttributesAreNotSuppoted, location, attribute.AttributeClass.Name));
+                        c.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.ExtensionsTypeNotSupported, location, attribute.AttributeClass.Name));
                     }
                 }
             }, SymbolKind.Method);

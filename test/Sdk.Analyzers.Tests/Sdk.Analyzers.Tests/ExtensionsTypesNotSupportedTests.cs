@@ -25,7 +25,7 @@ namespace FunctionApp
     public static class SomeFunction
     {
         [Function(nameof(SomeFunction))]
-        public static void Run([HttpTrigger(AuthorizationLevel.Anonymous, ""get"")] HttpRequestData req, [BlobInput(""input-container/sample1.txt"", Connection = ""AzureWebJobsStorage"")] BlobClient client)
+        public static void Run([HttpTrigger(AuthorizationLevel.System, ""get"")] HttpRequestData req, [BlobTrigger(""input-container/sample1.txt"", Connection = ""AzureWebJobsStorage"")] BlobClient client)
         {
         }
     }
@@ -34,15 +34,16 @@ namespace FunctionApp
             // TODO: This needs to pull from a local source
             test.ReferenceAssemblies = ReferenceAssemblies.Net.Net50.WithPackages(ImmutableArray.Create(
                 new PackageIdentity("Microsoft.Azure.WebJobs.Extensions", "4.0.1"),
-                new PackageIdentity("Microsoft.Azure.Functions.Worker", "1.0.0-preview5"),
-                new PackageIdentity("Microsoft.Azure.Functions.Worker.Sdk", "1.0.1-preview5"),
-                new PackageIdentity("Microsoft.Azure.Functions.Worker.Extensions.Abstractions", "1.0.0-preview5"),
-                new PackageIdentity("Microsoft.Azure.Functions.Worker.Extensions.Http", "3.0.12-preview1")));
+                new PackageIdentity("Microsoft.Azure.Functions.Worker", "1.10.0"),
+                new PackageIdentity("Microsoft.Azure.Functions.Worker.Sdk", "1.7.0"),
+                new PackageIdentity("Microsoft.Azure.Functions.Worker.Extensions.Abstractions", "1.1.0"),
+                new PackageIdentity("Microsoft.Azure.Functions.Worker.Extensions.Http", "3.0.12-preview1"),
+                new PackageIdentity("Microsoft.Azure.WebJobs.Extensions.Storage.Blobs","5.0.1")));
 
             test.TestCode = testCode;
 
             test.ExpectedDiagnostics.Add(Verify.Diagnostic().WithSeverity(Microsoft.CodeAnalysis.DiagnosticSeverity.Error)
-                .WithSpan(12, 105, 12, 122).WithArguments("TimerTriggerAttribute"));
+                .WithSpan(12, 105, 12, 122).WithArguments("HttpTriggerAttribute"));
             
             await test.RunAsync();
         }

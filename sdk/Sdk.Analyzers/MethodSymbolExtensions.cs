@@ -15,6 +15,11 @@ namespace Microsoft.Azure.Functions.Worker.Sdk.Analyzers
             return symbol.Parameters.Select(p => p.GetWebJobsAttribute()).Where(a => a is not null);
         }
 
+        public static IEnumerable<AttributeData> GetInvalidAttributes(this IMethodSymbol symbol)
+        {
+            return symbol.Parameters.Select(p => p.GetInvalidAttribute()).Where(a => a is not null);
+        }
+
         public static bool IsFunction(this IMethodSymbol symbol, SymbolAnalysisContext analysisContext)
         {
             var attributes = symbol.GetAttributes();

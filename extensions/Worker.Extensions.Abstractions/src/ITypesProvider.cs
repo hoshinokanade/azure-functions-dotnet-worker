@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Microsoft.Azure.Functions.Worker.Extensions.Abstractions
 {
@@ -21,5 +22,7 @@ namespace Microsoft.Azure.Functions.Worker.Extensions.Abstractions
         /// the Microsoft.Azure.Functions.Worker.Converters.IInputConverter interface.
         /// </summary>
         public IList<Type> Types { get; }
+
+        public IList<Type> GetTypes();
     }
 }
