@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Specialized;
 using Microsoft.Azure.Functions.Worker.Core;
+using Microsoft.Azure.Functions.Worker.Extensions.Abstractions;
 using Newtonsoft.Json;
 
 namespace Microsoft.Azure.Functions.Worker.Converters
@@ -16,8 +17,16 @@ namespace Microsoft.Azure.Functions.Worker.Converters
     /// <summary>
     /// Converter to bind Blob Storage type parameters.
     /// </summary>
-    internal class BlobStorageConverter : IInputConverter
+    internal class BlobStorageConverter : IInputConverter, ITypesProvider
     {
+        public IList<Type> Types =>  new[] { typeof(Type) };
+
+        public BlobStorageConverter()
+        {
+            Types.Add(typeof(string));
+            Types.Add(typeof(BlobClient));
+        }
+
         public ValueTask<ConversionResult> ConvertAsync(ConverterContext context)
         {
             if (context.Source is not IModelBindingData bindingData)
