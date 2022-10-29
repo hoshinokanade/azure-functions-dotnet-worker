@@ -28,7 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     AllowSynchronousContinuations = true
                 };
 
-                return new GrpcHostChannel(System.Threading.Channels.Channel.CreateUnbounded<StreamingMessage>(outputOptions));
+                return new GrpcHostChannel(Channel.CreateUnbounded<StreamingMessage>(outputOptions));
             });
         }
 
@@ -49,7 +49,21 @@ namespace Microsoft.Extensions.DependencyInjection
 
             // gRPC Core services
             services.AddSingleton<IWorker, GrpcWorker>();
+
+#if NET5_0_OR_GREATER
+            // If we are running in the native host process, use the native client
+            // for communication (interop). Otherwise; use the gRPC client.
+            if (AppContext.GetData("AZURE_FUNCTIONS_NATIVE_HOST") is not null)
+            {
+                services.AddSingleton<IWorkerClientFactory, Azure.Functions.Worker.Grpc.NativeHostIntegration.NativeWorkerClientFactory>();
+            }
+            else
+            {
+                services.AddSingleton<IWorkerClientFactory, GrpcWorkerClientFactory>();
+            }
+#else
             services.AddSingleton<IWorkerClientFactory, GrpcWorkerClientFactory>();
+#endif
 
             services.AddOptions<GrpcWorkerStartupOptions>()
                 .Configure<IConfiguration>((arguments, config) =>
