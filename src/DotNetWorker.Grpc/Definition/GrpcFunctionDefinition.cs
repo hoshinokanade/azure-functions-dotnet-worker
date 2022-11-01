@@ -19,7 +19,10 @@ namespace Microsoft.Azure.Functions.Worker.Definition
         {
             EntryPoint = loadRequest.Metadata.EntryPoint;
             Name = loadRequest.Metadata.Name;
-            PathToAssembly = Path.GetFullPath(loadRequest.Metadata.ScriptFile);
+
+            string? scriptRoot = Environment.GetEnvironmentVariable("AzureWebJobsScriptRoot")!;
+            string scriptFile = Path.Combine(scriptRoot, loadRequest.Metadata.ScriptFile);
+            PathToAssembly = Path.GetFullPath(scriptFile);
             Id = loadRequest.FunctionId;
 
             var grpcBindingsGroup = loadRequest.Metadata.Bindings.GroupBy(kv => kv.Value.Direction);

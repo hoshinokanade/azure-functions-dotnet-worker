@@ -36,6 +36,7 @@ namespace Microsoft.Azure.Functions.Worker.Grpc.NativeHostIntegration
             NativeMethods.RegisterCallbacks(_application, &HandleRequest, (IntPtr)_gcHandle);
 
             _ = ProcessInbound();
+            _ = ProcessOutbound();
         }
 
         private async Task ProcessInbound()
@@ -58,7 +59,7 @@ namespace Microsoft.Azure.Functions.Worker.Grpc.NativeHostIntegration
         {
             return _outputChannelWriter.WriteAsync(message);
         }
-        
+
         [UnmanagedCallersOnly]
         private static unsafe IntPtr HandleRequest(byte** nativeMessage, int nativeMessageSize, IntPtr grpcHandler)
         {

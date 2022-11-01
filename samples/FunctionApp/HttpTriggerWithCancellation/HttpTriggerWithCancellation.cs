@@ -19,7 +19,7 @@ namespace FunctionApp
             _logger = loggerFactory.CreateLogger<HttpTriggerWithCancellation>();
         }
 
-        [Function(nameof(HttpTriggerWithCancellation))]
+        //[Function(nameof(HttpTriggerWithCancellation))]
         public HttpResponseData Run(
             [HttpTrigger(AuthorizationLevel.Anonymous,"get", "post", Route = null)]
             HttpRequestData req,

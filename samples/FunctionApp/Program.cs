@@ -21,12 +21,7 @@ namespace FunctionApp
             //<docsnippet_startup>
             var host = new HostBuilder()
                 //<docsnippet_configure_defaults>
-                .ConfigureFunctionsWorkerDefaults(builder =>
-                {
-                    builder
-                        .AddApplicationInsights()
-                        .AddApplicationInsightsLogger();
-                })
+                .ConfigureFunctionsWorkerDefaults()
                 //</docsnippet_configure_defaults>
                 //<docsnippet_dependency_injection>
                 .ConfigureServices(s =>

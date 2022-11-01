@@ -10,7 +10,7 @@ namespace FunctionApp
 {
     public static class HttpTriggerWithBlobInput
     {
-        [Function(nameof(HttpTriggerWithBlobInput))]
+        //[Function(nameof(HttpTriggerWithBlobInput))]
         [ExponentialBackoffRetry(5, "00:00:04", "00:15:00")]
         public static MyOutputType Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequestData req,
