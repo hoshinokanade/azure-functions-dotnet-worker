@@ -5,12 +5,14 @@ using Azure.Storage.Blobs;
 using System.Collections.Generic;
 using System;
 using Microsoft.Azure.Functions.Worker.Extensions.Abstractions;
+using System.Threading.Tasks;
+using Microsoft.Azure.Functions.Worker.Converters;
 
 namespace Microsoft.Azure.Functions.Worker
 {
-    public sealed class BlobTriggerAttribute : TriggerBindingAttribute, ITypesProvider
+    public sealed class BlobTriggerAttribute : TriggerBindingAttribute, ITypedInputConverter
     {
-        public IList<Type> Types => new[] { typeof(string), typeof(BlobClient) };
+        public IEnumerable<Type> SupportedTypes => new[] { typeof(string), typeof(BlobClient) };
 
         private readonly string _blobPath;
 
@@ -42,9 +44,9 @@ namespace Microsoft.Azure.Functions.Worker
         /// </summary>
         public string? Connection { get; set; }
 
-        public IList<Type> GetTypes()
+        public ValueTask<ConversionResult> ConvertAsync(ConverterContext context)
         {
-            return Types;
+            throw new NotImplementedException();
         }
     }
 }

@@ -17,9 +17,9 @@ namespace Microsoft.Azure.Functions.Worker.Converters
     /// <summary>
     /// Converter to bind Blob Storage type parameters.
     /// </summary>
-    internal class BlobStorageConverter : IInputConverter, ITypesProvider
+    internal class BlobStorageConverter : ITypedInputConverter
     {
-        public IList<Type> Types =>  new[] { typeof(string), typeof(BlobClient)  };
+        public IEnumerable<Type> SupportedTypes =>  new[] { typeof(string), typeof(BlobClient)  };
 
         public ValueTask<ConversionResult> ConvertAsync(ConverterContext context)
         {

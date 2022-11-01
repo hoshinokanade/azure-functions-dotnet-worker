@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Microsoft.Azure.Functions.Worker.Converters;
 
 namespace Microsoft.Azure.Functions.Worker.Extensions.Abstractions
 {
@@ -14,15 +15,13 @@ namespace Microsoft.Azure.Functions.Worker.Extensions.Abstractions
     /// Input bindings/trigger binding shall implement this interface to provide information
     /// about which specific converters to be used when input conversion is performed for that binding.
     /// </remarks>
-    public interface ITypesProvider
+    public interface ITypedInputConverter : IInputConverter
     {
         /// <summary>
         /// Gets an ordered collection of <see cref="System.Type"/> instances representing the converters to be used.
         /// Each entry in the collection should be the <see cref="System.Type"/> of a class which implements
         /// the Microsoft.Azure.Functions.Worker.Converters.IInputConverter interface.
         /// </summary>
-        public IList<Type> Types { get; }
-
-        public IList<Type> GetTypes();
+        public IEnumerable<Type> SupportedTypes { get; }
     }
 }
